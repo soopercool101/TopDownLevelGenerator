@@ -82,8 +82,8 @@ public class TileBehavior : MonoBehaviour
 
         while (x == 0 && y == 0)
         {
-            x = Random.Range(-1, 1);
-            y = Random.Range(-1, 1);
+            x = Random.Range(-1, 2);
+            y = Random.Range(-1, 2);
         }
 
         return Instantiate(LevelDesignParameters.FloorTile,

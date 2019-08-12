@@ -78,7 +78,7 @@ public class LevelDesignParameters : MonoBehaviour
         TileCount = 0;
         HasExit = false;
         // Aim for a certain number of tiles
-        TargetTileCount = Random.Range(MinTiles, MaxTiles);
+        TargetTileCount = Random.Range(MinTiles, MaxTiles + 1);
         Debug.Log($"Target Floor Tile Count: {TargetTileCount}");
         // Aim for a certain Branch Chance
         BranchChance = Random.Range(MinBranchChance, MaxBranchChance);

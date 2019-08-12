@@ -15,16 +15,13 @@ public class WallTileBehavior : MonoBehaviour
         _updating = false;
     }
 
-    void OnCollisionStay2D(Collider2D other)
+    void OnCollisionStay2D(Collision2D other)
     {
-        if (!_updating)
+        if (!other.gameObject.tag.Equals("Wall"))
         {
-            if (other.gameObject.tag.Equals("Wall"))
-            {
-                Object.Destroy(gameObject);
-            }
+            Object.Destroy(gameObject);
         }
-        else if (!other.gameObject.tag.Equals("Wall"))
+        else if (gameObject.GetInstanceID() < other.gameObject.GetInstanceID())
         {
             Object.Destroy(gameObject);
         }
