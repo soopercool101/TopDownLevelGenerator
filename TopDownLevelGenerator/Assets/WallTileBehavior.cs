@@ -19,12 +19,12 @@ public class WallTileBehavior : MonoBehaviour
     {
         if (!_updating)
         {
-            if (other.tag.Equals("Wall"))
+            if (other.gameObject.tag.Equals("Wall"))
             {
                 Object.Destroy(gameObject);
             }
         }
-        else if (!other.tag.Equals("Wall"))
+        else if (!other.gameObject.tag.Equals("Wall"))
         {
             Object.Destroy(gameObject);
         }
