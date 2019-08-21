@@ -94,8 +94,8 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaDirect: 0.5
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
+    m_TrainingDataDestination: TrainingData
   m_LightingDataAsset: {fileID: 0}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -156,15 +156,17 @@ MonoBehaviour:
   LevelWallTile: {fileID: 4846566837148925269, guid: 5ac7e0abf66a2564ba644ae127ac1ed7,
     type: 3}
   LevelFloorColor: {r: 1, g: 1, b: 1, a: 1}
-  LevelWallColor: {r: 0, g: 0, b: 0, a: 1}
+  LevelWallColor: {r: 1, g: 0, b: 0.008412361, a: 1}
   LevelExitColor: {r: 0, g: 1, b: 0, a: 1}
-  MinTiles: 100
-  MaxTiles: 1000
-  MinTilesBeforeLevelExit: 75
+  MinTiles: 500
+  MaxTiles: 3000
+  MinTilesBeforeLevelExit: 100
   MinDistanceBeforeLevelExit: 15
-  LevelExitChance: 0.01
-  MinBranchChance: 0.05
-  MaxBranchChance: 0.4
+  LevelExitChance: 0.2
+  MinBranchChance: 0
+  MaxBranchChance: 0.005
+  MinMaxAllowedBranches: 0
+  MaxMaxAllowedBranches: 10
 --- !u!81 &899694229
 AudioListener:
   m_ObjectHideFlags: 0

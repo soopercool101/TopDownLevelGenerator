@@ -45,7 +45,7 @@ public class LevelDesignParameters : MonoBehaviour
     public static int TileCountCheck => FindObjectsOfType<TileBehavior>().Length;
 
     [SerializeField]
-    public int MinTilesBeforeLevelExit = 75;
+    public int MinTilesBeforeLevelExit = 1;
 
     public static int MinTilesBeforeExit { get; private set; }
 
@@ -68,14 +68,25 @@ public class LevelDesignParameters : MonoBehaviour
     [SerializeField]
     public float MaxBranchChance = 0.4f;
 
+    public static int BranchCount = 0;
+
+    [SerializeField]
+    public int MinMaxAllowedBranches = 0;
+
+    [SerializeField]
+    public int MaxMaxAllowedBranches = 10;
+
+    public static int MaxBranches = 0;
+
     public static float BranchChance { get; private set; }
 
-    public static bool LevelReady = HasExit && TileCount >= TargetTileCount;
+    public static bool LevelReady => HasExit && TileCount >= TargetTileCount;
     
     // Start is called before the first frame update
     void Start()
     {
         TileCount = 0;
+        BranchCount = 0;
         HasExit = false;
         // Aim for a certain number of tiles
         TargetTileCount = Random.Range(MinTiles, MaxTiles + 1);
@@ -83,6 +94,9 @@ public class LevelDesignParameters : MonoBehaviour
         // Aim for a certain Branch Chance
         BranchChance = Random.Range(MinBranchChance, MaxBranchChance);
         Debug.Log($"Branch Chance: {BranchChance}");
+        // Aim for a certain max number of branches
+        MaxBranches = Random.Range(MinMaxAllowedBranches, MaxMaxAllowedBranches + 1);
+        Debug.Log($"Max allowed branches: {MaxBranches}");
         // Use static properties to improve ease of access
         FloorTile = LevelFloorTile;
         FloorColor = LevelFloorColor;

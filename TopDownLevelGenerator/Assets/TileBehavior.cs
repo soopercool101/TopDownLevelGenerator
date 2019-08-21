@@ -1,47 +1,60 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.WSA;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class TileBehavior : MonoBehaviour
 {
-    private bool _updating = true;
     private List<GameObject> colliding = new List<GameObject>();
 
     public bool isExit = false;
 
-    // Start is called before the first frame update
+    private bool _genned = false;
+
+    private bool _updating = true;
+
+    private bool _markedForDeletion;
+    
+    private DateTime id = DateTime.Now;
+
     void Start()
     {
-        _updating = true;
-        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
-        sprite.color = LevelDesignParameters.FloorColor;
-        tag = "Floor";
-        if (LevelDesignParameters.TileCount > LevelDesignParameters.MinDistanceBeforeExit && !LevelDesignParameters.HasExit
+        if (!LevelDesignParameters.HasExit
+            && LevelDesignParameters.TileCount > LevelDesignParameters.MinTilesBeforeExit
+            && (Math.Abs(transform.position.x) > LevelDesignParameters.MinDistanceBeforeExit
+                || Math.Abs(transform.position.y) > LevelDesignParameters.MinDistanceBeforeExit)
             && Random.value < LevelDesignParameters.ExitChance)
         {
             LevelDesignParameters.HasExit = true;
             isExit = true;
             tag = "Exit";
-            sprite.color = LevelDesignParameters.ExitColor;
+            name = "EXIT";
+            Debug.Log($"Exit Created at: ({transform.position.x},{transform.position.y})");
         }
+    }
 
-        if (!LevelDesignParameters.LevelReady)
+    // Start is called before the first frame update
+    void Update()
+    {
+        if (_genned)
         {
-            int branchCount = 0;
-            do
+            if (!isExit && _markedForDeletion && !_updating)
             {
-                CreateNext();
-                branchCount++;
-            } while (Random.value < LevelDesignParameters.BranchChance);
-
-            if (branchCount > 1)
-            {
-                Debug.Log($"A tile branched {branchCount} times");
+                GameObject.Destroy(gameObject);
+                LevelDesignParameters.TileCount--;
             }
+            return;
         }
+
+        _updating = true;
+        _genned = true;
+        SpriteRenderer sprite = GetComponent<SpriteRenderer>();
+        tag = "Floor";
 
         // Instantiate Wall Tiles where necessary
         for (int x = -1; x <= 1; x++)
@@ -57,30 +70,37 @@ public class TileBehavior : MonoBehaviour
             }
         }
 
-        foreach (GameObject o in colliding)
+        sprite.color = isExit ? LevelDesignParameters.ExitColor : LevelDesignParameters.FloorColor;
+        _updating = false;
+        LevelDesignParameters.TileCount++;
+
+        if (!LevelDesignParameters.LevelReady)
         {
-            if (o.tag.Equals("Wall"))
+            int branchCount = -1;
+            do
             {
-                Destroy(o);
-            }
-            else if (!o.tag.Equals("Player"))
+                CreateNext();
+                branchCount++;
+            } while (LevelDesignParameters.BranchCount < LevelDesignParameters.MaxBranches && Random.value < LevelDesignParameters.BranchChance);
+
+            if (branchCount > 0)
             {
-                Destroy(this.gameObject);
-                return;
+                LevelDesignParameters.BranchCount += branchCount;
+                //Debug.Log($"A tile branched {branchCount} times");
             }
         }
-
-        LevelDesignParameters.TileCount++;
-        
-        _updating = false;
     }
 
     public GameObject CreateNext()
     {
+        if (LevelDesignParameters.LevelReady)
+        {
+            return null;
+        }
         int x = 0;
         int y = 0;
 
-        while (x == 0 && y == 0)
+        while (Math.Abs(x) == Math.Abs(y))
         {
             x = Random.Range(-1, 2);
             y = Random.Range(-1, 2);
@@ -90,19 +110,40 @@ public class TileBehavior : MonoBehaviour
             new Vector3(transform.position.x + x, transform.position.y + y, transform.position.z), transform.rotation);
     }
 
-    void OnTriggerStay2D(Collider2D Other)
+
+    private bool checkedColl = false;
+    void OnTriggerStay2D(Collider2D other)
     {
-        if (isExit)
+        if (other.tag.Equals("WallCheck", StringComparison.OrdinalIgnoreCase))
         {
-            if (Other.gameObject.tag.Equals("Player"))
-            {
-                Debug.Log("YOU WIN!");
-            }
+            GameObject.Destroy(other.transform.parent.gameObject);
+        } else if (other.tag.Equals("Wall", StringComparison.OrdinalIgnoreCase))
+        {
+            GameObject.Destroy(other.gameObject);
         }
-        if (!_updating)
+        if (_updating)
         {
             return;
         }
-        colliding.Add(Other.gameObject);
+        if (isExit)
+        {
+            if (other.gameObject.tag.Equals("Player", StringComparison.OrdinalIgnoreCase))
+            {
+                Debug.Log("YOU WIN!");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().ToString());
+            }
+            if (other.tag.Equals("Floor"))
+            {
+                other.gameObject.GetComponent<TileBehavior>()._markedForDeletion = true;
+            }
+        }
+        else if (other.tag.Equals("Exit", StringComparison.OrdinalIgnoreCase))
+        {
+            _markedForDeletion = true;
+        }
+        else if (other.tag.Equals("Floor") && id > (other.gameObject.GetComponent<TileBehavior>()?.id ?? DateTime.MinValue))
+        {
+            other.gameObject.GetComponent<TileBehavior>()._markedForDeletion = true;
+        }
     }
 }
