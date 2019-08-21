@@ -1,8 +1,4 @@
-﻿using JetBrains.Annotations;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 // Keeps track of per-level variables for level generation
@@ -53,12 +49,7 @@ public class LevelDesignParameters : MonoBehaviour
     public float MinDistanceBeforeLevelExit = 15.0f;
 
     public static float MinDistanceBeforeExit { get; private set; }
-
-    [SerializeField]
-    public float LevelExitChance = 0.01f;
     
-    public static float ExitChance { get; private set; }
-
     public static bool HasExit;
     public static bool HasExitCheck => GameObject.FindGameObjectsWithTag("Exit").Length > 1;
 
@@ -81,6 +72,8 @@ public class LevelDesignParameters : MonoBehaviour
     public static float BranchChance { get; private set; }
 
     public static bool LevelReady => HasExit && TileCount >= TargetTileCount;
+
+    public static int ExitTileAimNum = 0;
     
     // Start is called before the first frame update
     void Start()
@@ -105,7 +98,9 @@ public class LevelDesignParameters : MonoBehaviour
         ExitColor = LevelExitColor;
         MinTilesBeforeExit = MinTilesBeforeLevelExit;
         MinDistanceBeforeExit = MinDistanceBeforeLevelExit;
-        ExitChance = LevelExitChance;
+        // Determine the planned exit tile location
+        ExitTileAimNum = Random.Range(MinTilesBeforeExit, MaxTiles + 1);
+        Debug.Log($"Exit tile will be placed after {ExitTileAimNum} tiles");
         // Create the first tile. The tile should be set up to do the rest
         Instantiate(FloorTile, new Vector3(0, 0, 0), new Quaternion(0,0,0,0));
     }

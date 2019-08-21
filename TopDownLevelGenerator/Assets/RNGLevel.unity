@@ -162,8 +162,7 @@ MonoBehaviour:
   MinTiles: 500
   MaxTiles: 3000
   MinTilesBeforeLevelExit: 100
-  MinDistanceBeforeLevelExit: 15
-  LevelExitChance: 0.2
+  MinDistanceBeforeLevelExit: 25
   MinBranchChance: 0
   MaxBranchChance: 0.005
   MinMaxAllowedBranches: 0

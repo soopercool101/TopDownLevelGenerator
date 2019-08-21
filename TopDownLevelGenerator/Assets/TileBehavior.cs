@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 public class TileBehavior : MonoBehaviour
@@ -26,7 +24,7 @@ public class TileBehavior : MonoBehaviour
             && LevelDesignParameters.TileCount > LevelDesignParameters.MinTilesBeforeExit
             && (Math.Abs(transform.position.x) > LevelDesignParameters.MinDistanceBeforeExit
                 || Math.Abs(transform.position.y) > LevelDesignParameters.MinDistanceBeforeExit)
-            && Random.value < LevelDesignParameters.ExitChance)
+            && LevelDesignParameters.TileCount >= LevelDesignParameters.ExitTileAimNum)
         {
             LevelDesignParameters.HasExit = true;
             isExit = true;
